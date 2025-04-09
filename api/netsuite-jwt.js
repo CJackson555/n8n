@@ -3,12 +3,12 @@ import jwt from 'jsonwebtoken';
 export default async function handler(req, res) {
   const { client_id, account_id } = req.query;
 
-  // Load your private key securely (you'll add this in Vercel env settings)
-  const privateKey = process.env.PRIVATE_KEY;
-
-  if (!client_id || !account_id || !privateKey) {
-    return res.status(400).json({ error: 'Missing client_id, account_id, or private key' });
+  const rawKey = process.env.PRIVATE_KEY;
+  if (!client_id || !account_id || !rawKey) {
+    return res.status(400).json({ error: 'Missing required params or key' });
   }
+
+  const privateKey = rawKey.replace(/\\n/g, '\n');
 
   const now = Math.floor(Date.now() / 1000);
   const payload = {
@@ -16,7 +16,7 @@ export default async function handler(req, res) {
     scope: 'rest_webservices',
     aud: `https://${account_id.toLowerCase()}.suitetalk.api.netsuite.com/services/rest/auth/oauth2/v1/token`,
     iat: now,
-    exp: now + 300, // 5 minutes
+    exp: now + 300
   };
 
   try {
