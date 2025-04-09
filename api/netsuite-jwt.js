@@ -8,7 +8,8 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing required params or key' });
   }
 
-  const privateKey = rawKey.replace(/\\n/g, '\n');
+  const privateKey = process.env.PRIVATE_KEY.replace(/\\n/g, '\n');
+
 
   const now = Math.floor(Date.now() / 1000);
   const payload = {
